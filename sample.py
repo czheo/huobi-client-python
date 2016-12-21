@@ -1,6 +1,5 @@
 from streaming_client import StreamingClient
 import logging
-import json
 
 
 def on_msg(data):
