@@ -13,13 +13,11 @@ HUOBI_API = "https://api.huobi.com/apiv3"
 
 
 def _signature(params):
-    params = sorted(params.items(), key=lambda d: d[0])
+    params = sorted(params.items())
     message = urlencode(params).encode('utf8')
     m = hashlib.md5()
     m.update(message)
-    m.digest()
-    sig = m.hexdigest()
-    return sig
+    return m.hexdigest()
 
 
 def _set_coin_type(params, coin_type):
@@ -52,7 +50,7 @@ class Client:
         params['secret_key'] = self.secret_key
         params['created'] = int(time.time())
         params['sign'] = _signature(params)
-        # NOTE: market should not be in signature
+        # NOTE: secret_key should not be in signature
         del params['secret_key']
 
         # put skipped params back
