@@ -1,1 +1,2 @@
 socketIO-client==0.5.7.2
+requests
