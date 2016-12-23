@@ -1,4 +1,4 @@
-NOTE: huobi_client is still in design stage. It's not working yet. Stay tuned.
+NOTE: huobi_client is still in design stage. It's not working yet.(Some kinda works with Python>=3.5) Stay tuned.
 
 # huobi-client-python
 ## Installation
