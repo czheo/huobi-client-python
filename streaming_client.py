@@ -6,63 +6,37 @@ VALID_PERIOD = {
     "1day", "1week", "1mon", "1year",
 }
 VALID_PERCENT = {10, 20, 50, 80, 100}
-VALID_CURRENCY = {'btc', 'ltc'}
+VALID_SYMBOL = {
+    'lastTimeLine',
+    'lastKLine',
+    'marketDepthDiff',
+    'marketDepthTopDiff',
+    'marketDetail',
+    'tradeDetail',
+    'marketOverview',
+}
 logger = logging.getLogger(__name__)
 
 
 class StreamingClient:
-    def __init__(self, currency='btc'):
-        if currency in VALID_CURRENCY:
-            self._currency = currency
-        else:
-            raise Exception('"%s" is no a valid currency.'
-                            'currency must be in %s'
-                            % (currency, VALID_CURRENCY))
+    '''
+    sc = StreamingClient()
+    sc.subscribe('lastTimeLine')
+    sc.run(on_msg)
+    '''
+    def __init__(self):
         self._io = SocketIO('hq.huobi.com', 80)
-        self._req_data = {
+        self.req_data = {
             'version': 1,
             'msgType': 'reqMsgSubscribe',
-            'symbolList': {
-                'lastTimeLine': [],
-                'lastKLine': [],
-                'marketDepthDiff': [],
-                'marketDepthTopDiff': [],
-                'marketDetail': [],
-                'tradeDetail': [],
-                'marketOverview': [],
-            }
+            'symbolList': {}
         }
 
-    def disconnect(self):
-        self._io.disconnect()
-
-    def _on_connect(self):
-        logger.info('connected')
-        self._io.emit('request', self._req_data)
-
-    def _on_reconnect(self):
-        logger.info('reconnected')
-        self._io.emit('request', self._req_data)
-
-    def _on_disconnect(self):
-        logger.info('disconnected')
-
-    def _on_request(self, data):
-        logger.info('request: %s' % data)
-
-    def run(self, on_msg):
-        self._io.on('connect', self._on_connect)
-        self._io.on('request', self._on_request)
-        self._io.on('message', on_msg)
-        self._io.on('reconnect', self._on_reconnect)
-        self._io.on('disconnect', self._on_disconnect)
-        self._io.wait()
-
-    def register_symbol(self, sym, period='1min', percent=10):
-        symbol_list = self._req_data['symbolList']
-        if sym in symbol_list:
+    def subscribe(self, sym, period='1min', percent=10, currency='btccny'):
+        symbol_list = self.req_data['symbolList']
+        if sym in VALID_SYMBOL:
             d = {
-                'symbolId': '%scny' % self._currency,
+                'symbolId': currency,
                 'pushType': 'pushLong',
             }
             if sym == 'lastKLine':
@@ -77,20 +51,106 @@ class StreamingClient:
                 else:
                     raise Exception('percent must be in %s'
                                     % VALID_PERCENT)
-            symbol_list[sym].append(d)
+            # init symbol_list[sym]
+            if sym not in symbol_list:
+                symbol_list[sym] = []
+            # append record
+            if d not in symbol_list[sym]:
+                symbol_list[sym].append(d)
         else:
             raise Exception('"%s" is not a valid symbol.'
                             'symbol must be in %s'
                             % (sym, set(symbol_list.keys())))
 
-    def register_all_symbols(self):
-        symbol_list = self._req_data['symbolList']
-        for sym in symbol_list:
+    def subscribe_all(self, currency='btccny'):
+        for sym in VALID_SYMBOL:
             if sym == 'lastKLine':
                 for period in VALID_PERIOD:
-                    self.register_symbol(sym, period=period)
+                    self.subscribe(sym, period=period,
+                                   currency=currency)
             elif sym == 'marketDepthTopDiff':
                 for percent in VALID_PERCENT:
-                    self.register_symbol(sym, percent=percent)
+                    self.subscribe(sym, percent=percent,
+                                   currency=currency)
             else:
-                self.register_symbol(sym)
+                self.subscribe(sym, currency=currency)
+
+    def unsubscribe(self, sym, period='1min',
+                    percent=10, currency='btccny'):
+        raise NotImplementedError
+
+    def _on_connect(self):
+        logger.info('connect')
+        self._io.emit('request', self.req_data)
+
+    def _on_reconnect(self):
+        logger.info('reconnected')
+
+    def _on_disconnect(self):
+        logger.info('disconnected')
+
+    def _on_request(self, data):
+        logger.info('request: %s' % data)
+
+    def connect(self, on_msg):
+        self._io.on('connect', self._on_connect)
+        self._io.on('reconnect', self._on_reconnect)
+        self._io.on('disconnect', self._on_disconnect)
+        self._io.on('request', self._on_request)
+        self._io.on('message', on_msg)
+        self._io.wait()
+
+# unused
+# def timeline(on_msg, currency='btccny'):
+#     data = {
+#         'msgType': 'reqTimeLine',
+#     }
+#     _run_client(on_msg, data, currency)
+#
+#
+# def kline(on_msg, period='1min', currency='btccny'):
+#     data = {
+#         'msgType': 'reqKLine',
+#         'period': period,
+#     }
+#     _run_client(on_msg, data, currency)
+#
+#
+# def market_depth_top(on_msg, currency='btccny'):
+#     data = {
+#         'msgType': 'reqMarketDepthTop',
+#     }
+#     _run_client(on_msg, data, currency)
+#
+#
+# def market_depth(on_msg, percent=10, currency='btccny'):
+#     data = {
+#         'msgType': 'reqMarketDepth',
+#         'percent': percent,
+#     }
+#     _run_client(on_msg, data, currency)
+#
+#
+# def trade_detail_top(on_msg, count=None, currency='btccny'):
+#     data = {
+#         'msgType': 'reqTradeDetailTop',
+#     }
+#     if count:
+#         data['count'] = count
+#     _run_client(on_msg, data, currency)
+#
+#
+# def market_detail(on_msg, currency='btccny'):
+#     data = {
+#         'msgType': 'reqMarketDetail',
+#     }
+#     _run_client(on_msg, data, currency)
+#
+#
+# def _run_client(on_msg, data, currency):
+#     sc = StreamingClient()
+#     data['symbolId'] = currency
+#     sc.req_data.update(data)
+#     del sc.req_data['symbolList']
+#     print(sc.req_data)
+#     sc.run(on_msg)

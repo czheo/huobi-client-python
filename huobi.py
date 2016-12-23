@@ -1,11 +1,44 @@
+#! /usr/bin/env python
+
 from client import Client
+from streaming_client import StreamingClient, VALID_SYMBOL,\
+                             VALID_PERIOD, VALID_PERCENT
 from pprint import pprint
 import argparse
+import logging
+
+
+def on_msg(data):
+    pprint(data)
+
+
+def stream(args):
+    logging.basicConfig(level=logging.INFO)
+    sc = StreamingClient()
+    if args.filter:
+        # subscribe filter
+        if args.period:
+            sc.subscribe(args.filter, period=args.period)
+        elif args.percent:
+            sc.subscribe(args.filter, percent=args.percent)
+        else:
+            sc.subscribe(args.filter)
+    else:
+        # subscribe all
+        sc.subscribe_all()
+
+    # connect to server
+    try:
+        sc.connect(on_msg)
+    except KeyboardInterrupt:
+        exit()
 
 
 def main(args):
     c = Client()
-    if args.command == 'info':
+    if args.command == 'stream':
+        stream(args)
+    elif args.command == 'info':
         pprint(c.get_account_info())
     elif args.command == 'orders':
         pprint(c.get_orders())
@@ -21,6 +54,14 @@ def main(args):
         pprint(c.sell_market(args.amount))
     elif args.command == 'cancel':
         pprint(c.cancel_order(args.id))
+    elif args.command == 'norders':
+        pprint(c.get_new_deal_orders())
+    elif args.command == 'tid2oid':
+        pprint(c.get_order_id_by_trade_id(args.tid))
+    elif args.command == 'avail_loans':
+        pprint(c.get_loan_available())
+    elif args.command == 'loans':
+        pprint(c.get_loans())
 
 
 if __name__ == "__main__":
@@ -51,6 +92,34 @@ if __name__ == "__main__":
     # cancel order
     parser_cancel = subparsers.add_parser('cancel', help='cancel order')
     parser_cancel.add_argument('id')
+    # get new deal orders
+    parser_new_orders = subparsers.add_parser('norders',
+                                              help='get new deal order')
+    # get order id by trade id
+    parser_tid2oid = subparsers.add_parser('tid2oid',
+                                           help='get order id by trade id')
+    parser_tid2oid.add_argument('tid')
+
+    # TODO: withdraw
+    # parser_withdraw = subparsers.add_parser('withdraw',
+    #                                         help='withdraw related functions')
+    # TODO: loans
+    # TODO: transfer
+
+    # get available loans
+    parser_avail_loan = subparsers.add_parser('avail_loans',
+                                              help='get available loans')
+
+    # get loans
+    parser_loans = subparsers.add_parser('loans',
+                                         help='get loans')
+
+    # stream
+    parser_stream = subparsers.add_parser('stream',
+                                          help='dump socketio data')
+    parser_stream.add_argument('-f', '--filter', choices=VALID_SYMBOL)
+    parser_stream.add_argument('--period', choices=VALID_PERIOD)
+    parser_stream.add_argument('--percent', choices=VALID_PERCENT)
 
     args = parser.parse_args()
     if args.command:
