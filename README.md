@@ -5,6 +5,14 @@ pip install huobi_client
 ```
 
 ## Put access key and secret key in `~/.huobi.keys`
+
+```
+$ echo $access_key > ~/.huobi.keys
+$ echo $secet_key >> ~/.huobi.keys
+$ chmod 400 ~/.huobi.keys
+```
+
+`~/.huobi.keys` should look like below.
 ```
 xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx
 yyyyyyyy-yyyyyyyy-yyyyyyyy-yyyyy
