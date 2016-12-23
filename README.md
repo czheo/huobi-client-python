@@ -20,7 +20,36 @@ xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx
 yyyyyyyy-yyyyyyyy-yyyyyyyy-yyyyy
 ```
 
-## Usage
+## Command Line Tool
+```
+$ huobi
+usage: huobi [-h]
+             {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
+             ...
+
+huobi command line tool
+
+positional arguments:
+  {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
+    info                account info
+    orders              orders
+    oinfo               order info
+    buy                 buy
+    sell                sell
+    buym                buy market
+    sellm               sell market
+    cancel              cancel order
+    norders             get new deal order
+    tid2oid             get order id by trade id
+    avail_loans         get available loans
+    loans               get loans
+    stream              dump socketio data
+
+optional arguments:
+  -h, --help            show this help message and exit
+```
+
+## Library Usage
 
 ### Rest API
 ``` python
@@ -64,33 +93,4 @@ def on_message(data):
 sclient = StreamingClient()
 sclient.subscribe('tradeDetail')
 sclient.connect(on_message)
-```
-
-### Command Line Tool
-```
-$ huobi
-usage: huobi [-h]
-             {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
-             ...
-
-huobi command line tool
-
-positional arguments:
-  {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
-    info                account info
-    orders              orders
-    oinfo               order info
-    buy                 buy
-    sell                sell
-    buym                buy market
-    sellm               sell market
-    cancel              cancel order
-    norders             get new deal order
-    tid2oid             get order id by trade id
-    avail_loans         get available loans
-    loans               get loans
-    stream              dump socketio data
-
-optional arguments:
-  -h, --help            show this help message and exit
 ```
