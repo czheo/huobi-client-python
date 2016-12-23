@@ -1,3 +1,5 @@
+NOTE: huobi_client is still in design stage. It's not working yet. Stay tuned.
+
 # huobi-client-python
 ## Installation
 ```
