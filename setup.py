@@ -1,15 +1,13 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="huobi_client",
-    version="0.2.0",
+    version="0.2.1",
     description="a client library for huobi",
     author="czheo",
     license="LGPL",
     keywords="bitcoin huobi huobi.com",
-    packages=[
-        "huobi_client"
-    ],
+    packages=find_packages(),
     scripts=[
         'bin/huobi'
     ],
