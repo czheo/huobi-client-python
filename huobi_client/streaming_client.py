@@ -1,4 +1,4 @@
-from socketIO_client import SocketIO
+from .socketIO_client import SocketIO
 import logging
 
 VALID_PERIOD = {
