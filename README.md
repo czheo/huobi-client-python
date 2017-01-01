@@ -1,4 +1,4 @@
-NOTE: The API is prone to change. Stay tuned.
+NOTE: This library is only tested under Python>=3.5. The API is prone to change. Stay tuned.
 
 # huobi-client-python
 ## Installation
