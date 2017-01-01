@@ -63,6 +63,20 @@ def main(args):
         pprint(c.get_loan_available())
     elif args.command == 'loans':
         pprint(c.get_loans())
+    elif args.command == 'kline':
+        if args.period:
+            pprint(c.get_kline(args.period))
+        else:
+            pprint(c.get_kline())
+    elif args.command == 'ticker':
+        pprint(c.get_ticker())
+    elif args.command == 'depth':
+        if args.count:
+            pprint(c.get_depth(args.count))
+        else:
+            pprint(c.get_depth())
+    elif args.command == 'market':
+        pprint(c.get_market())
 
 
 if __name__ == "__main__":
@@ -121,6 +135,20 @@ if __name__ == "__main__":
     parser_stream.add_argument('-f', '--filter', choices=VALID_SYMBOL)
     parser_stream.add_argument('--period', choices=VALID_PERIOD)
     parser_stream.add_argument('--percent', choices=VALID_PERCENT)
+
+    # kline
+    parser_kline = subparsers.add_parser('kline', help='get kline')
+    parser_kline.add_argument('--period', choices=VALID_PERIOD)
+
+    # ticker
+    parser_ticker = subparsers.add_parser('ticker', help='get ticker')
+
+    # depth
+    parser_depth = subparsers.add_parser('depth', help='get depth')
+    parser_depth.add_argument('-c', '--count', type=int)
+
+    # market
+    parser_market = subparsers.add_parser('market', help='get market detail')
 
     args = parser.parse_args()
     if args.command:

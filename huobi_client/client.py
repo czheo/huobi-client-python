@@ -9,8 +9,22 @@ except:
     # py2
     from urllib import urlencode
 
-HUOBI_API = "https://api.huobi.com/apiv3"
+HUOBI_API = "https://api.huobi.com/"
 
+def _period_str_to_url_param(period):
+    d = {
+        '1min': '001',
+        '5min': '005',
+        '15min': '015',
+        '30min': '030',
+        '60min': '060',
+        '1day': '100',
+        '1week': '200',
+        '1mon': '300',
+        '1year': '400',
+    }
+
+    return d.get(period)
 
 def _signature(params):
     params = sorted(params.items())
@@ -76,7 +90,7 @@ class Client:
         params.update(skip_params)
         # delete None params
         params = {k: v for k, v in params.items() if v is not None}
-        return requests.get(HUOBI_API, params).json()
+        return requests.get(HUOBI_API + 'apiv3', params).json()
 
     def get_account_info(self):
         params = {
@@ -236,3 +250,48 @@ class Client:
             'method': 'get_loans',
         }
         return self._request(params)
+
+
+    # ================
+    # market api
+    # ================
+    def get_kline(self, period='1min', currency='cny', coin_type='btc'):
+        '''
+        timestamp, open, high, low, close, volume
+        '''
+        if currency == 'usd':
+            market = 'usd'
+        else:
+            market = 'static'
+        period_str = _period_str_to_url_param(period)
+        url = HUOBI_API + '{}market/{}_kline_{}_json.js'.format(market, coin_type, period_str)
+        return requests.get(url).json()
+
+    def get_ticker(self, currency='cny', coin_type='btc'):
+        if currency == 'usd':
+            market = 'usd'
+        else:
+            market = 'static'
+        url = HUOBI_API + '{}market/ticker_{}_json.js'.format(market, coin_type)
+        return requests.get(url).json()
+
+    def get_depth(self, count=9999, currency='cny', coin_type='btc'):
+        if currency == 'usd':
+            market = 'usd'
+        else:
+            market = 'static'
+
+        if not count in range(1, 151):
+            count = 'json'
+
+        url = HUOBI_API + '{}market/depth_{}_{}.js'.format(market, coin_type, count)
+        return requests.get(url).json()
+
+    def get_market(self, currency='cny', coin_type='btc'):
+        if currency == 'usd':
+            market = 'usd'
+        else:
+            market = 'static'
+
+        url = HUOBI_API + '{}market/detail_{}_json.js'.format(market, coin_type)
+        return requests.get(url).json()
