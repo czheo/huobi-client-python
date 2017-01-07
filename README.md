@@ -1,4 +1,4 @@
-NOTE: huobi_client is still in design stage. It's not working yet.(Some kinda works with Python>=3.5) Stay tuned.
+NOTE: This library is only tested under Python>=3.5. The API is prone to change. Stay tuned.
 
 # huobi-client-python
 ## Installation
@@ -24,13 +24,13 @@ yyyyyyyy-yyyyyyyy-yyyyyyyy-yyyyy
 ```
 $ huobi
 usage: huobi [-h]
-             {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
+             {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream,kline,ticker,depth,market}
              ...
 
 huobi command line tool
 
 positional arguments:
-  {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream}
+  {info,orders,oinfo,buy,sell,buym,sellm,cancel,norders,tid2oid,avail_loans,loans,stream,kline,ticker,depth,market}
     info                account info
     orders              orders
     oinfo               order info
@@ -44,6 +44,10 @@ positional arguments:
     avail_loans         get available loans
     loans               get loans
     stream              dump socketio data
+    kline               get kline
+    ticker              get ticker
+    depth               get depth
+    market              get market detail
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -54,7 +58,9 @@ optional arguments:
 ### Rest API
 ``` python
 from huobi_client import Client
+
 client = Client()
+
 client.get_account_info() # get account info
 client.get_orders() # get orders
 client.get_order_info(id) # get order info by order id
@@ -77,6 +83,8 @@ client.get_loans()
 subscribe all messages
 ``` python
 from huobi_client import StreamingClient
+
+
 def on_message(data):
     print(data)
  
@@ -87,6 +95,8 @@ sclient.connect(on_message)
 subscribe specific messages
 ``` python
 from huobi_client import StreamingClient
+
+
 def on_message(data):
     print(data)
  
