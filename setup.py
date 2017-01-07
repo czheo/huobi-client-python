@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 
 setup(
     name="huobi_client",
-    version="0.3.0",
+    version="0.3.1",
+    url='https://github.com/czheo/huobi-client-python',
     description="a client library for huobi",
     author="czheo",
     license="LGPL",
