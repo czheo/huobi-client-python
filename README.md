@@ -1,4 +1,4 @@
-NOTE: This library is only tested under Python>=3.5. The API is prone to change. Stay tuned.
+# !! This library does not work any more, because Huobi's API has changed a lot since this library was developed. The author is not intersted in maintaining this library any more. !!
 
 # huobi-client-python
 ## Installation
