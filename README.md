@@ -1,4 +1,4 @@
-# !! This library does not work any more, because Huobi's API has changed a lot since this library was developed. The author is not intersted in maintaining this library any more. !!
+# !! This library does not work, because Huobi's API has changed a lot since this library was developed. The author is not going to maintain it anymore. !!
 
 # huobi-client-python
 ## Installation
